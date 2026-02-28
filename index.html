@@ -5,64 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rumah Fiqih Bismi - Advanced Engine</title>
     
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     
     <style>
-        body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        rect { cursor: pointer; transition: all 0.2s ease-in-out; }
-        rect:hover { filter: brightness(1.1); }
-        .float {
-            position: fixed; width: 70px; height: 70px; bottom: 40px; right: 40px;
-            background-color: #0d6efd; color: #FFF; border-radius: 50px;
-            text-align: center; box-shadow: 2px 2px 8px #999; z-index: 1000;
-            cursor: pointer; transition: all 0.3s;
+        :root {
+            --primary-color: #0f4c3a; /* Deep Emerald Green */
+            --secondary-color: #c5a059; /* Elegant Muted Gold */
+            --bg-color: #f4f8f5; /* Very soft green-tinted white */
+            --text-main: #2d3748;
         }
-        .float:hover { background-color: #0b5ed7; transform: scale(1.05); }
-        .my-float { margin-top: 15px; font-size: 24px; }
-        .legend { display: none; margin-bottom: 80px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .svg-container { overflow-x: auto; overflow-y: hidden; width: 100%; cursor: grab; }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Poppins', sans-serif; 
+            color: var(--text-main);
+        }
+
+        /* Navbar Customization */
+        .navbar-custom {
+            background-color: var(--primary-color) !important;
+            border-bottom: 4px solid var(--secondary-color);
+        }
+        .navbar-brand strong {
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .navbar-brand i { color: var(--secondary-color); margin-right: 8px;}
+
+        /* Alert/Instruction Box */
+        .alert-custom {
+            background-color: #ffffff;
+            border: none;
+            border-left: 6px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            color: var(--text-main);
+        }
+
+        /* Input Customization */
+        .input-group-text {
+            background-color: #f8faf9;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(15, 76, 58, 0.25);
+        }
+
+        /* SVG Interaction */
+        rect { cursor: pointer; transition: all 0.2s ease-in-out; }
+        rect:hover { filter: brightness(1.15) drop-shadow(0px 0px 5px rgba(0,0,0,0.3)); }
+        .svg-container { overflow-x: auto; overflow-y: hidden; width: 100%; cursor: grab; background-color: #fdfdfd; border-radius: 0 0 12px 12px;}
         .svg-container:active { cursor: grabbing; }
         svg { max-width: none; transition: transform 0.3s ease; transform-origin: top left;}
-        .card { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .alert-primary { background-color: #e4ecfb; border-color: #c9dbf7; color: #1a3b70; border-radius: 12px;}
+        
+        /* Floating Button */
+        .float {
+            position: fixed; width: 70px; height: 70px; bottom: 40px; right: 40px;
+            background-color: var(--primary-color); 
+            color: var(--secondary-color); 
+            border-radius: 50px;
+            text-align: center; box-shadow: 0 6px 16px rgba(15, 76, 58, 0.4); 
+            z-index: 1000; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid var(--secondary-color);
+        }
+        .float:hover { 
+            background-color: #0a3629; 
+            transform: scale(1.1) translateY(-5px); 
+            color: #ffffff;
+        }
+        .my-float { margin-top: 15px; font-size: 24px; }
+        
+        /* Table Customization */
+        .legend { display: none; margin-bottom: 80px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden; }
+        .table-custom th {
+            background-color: var(--primary-color) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            border-bottom: none;
+        }
+        .table { margin-bottom: 0; background-color: #ffffff; }
+        
+        /* Cards & Modals */
+        .card { border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
+        .card-header { border-bottom: 1px solid rgba(0,0,0,0.05); border-radius: 12px 12px 0 0 !important; }
+        .card-header h5 { color: var(--primary-color); }
+        
+        .modal-header-custom { background-color: var(--primary-color); color: white; border-bottom: 3px solid var(--secondary-color); }
+        .btn-custom { background-color: var(--primary-color); color: white; }
+        .btn-custom:hover { background-color: #0a3629; color: white;}
+        .text-success-custom { color: #118255 !important; }
     </style>
 </head>
 <body>
 
-    <div class="collapse bg-dark" id="navbarHeader">
+    <div class="collapse" id="navbarHeader" style="background-color: #0a3629;">
         <div class="container">
             <div class="row">
                 <div class="col-sm-8 col-md-7 py-4">
-                    <h4 class="text-white">About Faraidh Engine</h4>
-                    <p class="text-muted">Ini adalah simulator Faraidh menggunakan pendekatan Rule-Based System. Algoritma mengevaluasi Mahjub (blocking), Ashabul Furudh, Asabah, mencari KPK (Asal Masalah), dan melakukan Tashih secara dinamis.</p>
+                    <h4 class="text-white" style="color: var(--secondary-color) !important;">Tentang Faraidh Engine</h4>
+                    <p class="text-white-50">Ini adalah simulator Faraidh menggunakan pendekatan Rule-Based System. Algoritma mengevaluasi Mahjub (blocking), Ashabul Furudh, Asabah, mencari KPK (Asal Masalah), dan melakukan Tashih secara dinamis.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="navbar navbar-dark navbar-custom shadow-sm">
         <div class="container">
             <a href="/" class="navbar-brand d-flex align-items-center">
                 <strong><i class="fa fa-calculator"></i> Rumah Fiqih Bismi</strong>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
     </div>
 
+    <!-- Modal Entri -->
     <div class="modal fade" id="mdl_entri_jumlah" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modal_heir_title">Pilih Ahli Waris</h5>
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold" id="modal_heir_title">Pilih Ahli Waris</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <label class="form-label text-muted">Berapa jumlah ahli waris ini yang masih hidup?</label>
+                <div class="modal-body p-4">
+                    <label class="form-label text-muted fw-bold mb-3">Berapa jumlah ahli waris ini yang masih hidup?</label>
                     <div class="input-group input-group-lg">
-                        <select id="jml_ahli" class="form-select" autofocus>
+                        <select id="jml_ahli" class="form-select shadow-sm" autofocus>
                             <option value="0" selected>Tidak Ada (0)</option>
                             <option value="1">1 Orang</option>
                             <option value="2">2 Orang</option>
@@ -75,9 +150,9 @@
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="btn_save_jumlah">Simpan</button>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-light shadow-sm" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-custom px-4 shadow-sm" id="btn_save_jumlah">Simpan</button>
                 </div>
             </div>
         </div>
@@ -85,31 +160,33 @@
 
     <main role="main" class="py-4">
         <div class="container">
-            <div class="row mb-4 alert alert-primary">
-                <div class="col-md-12">
-                    <p><b>Petunjuk Penggunaan:</b> Masukkan total harta peninggalan. Klik kotak pada diagram Faraidh untuk menentukan jumlah ahli waris yang hidup.</p>
+            <!-- Instruction Box -->
+            <div class="row mb-4 alert alert-custom mx-0">
+                <div class="col-md-12 p-3">
+                    <p class="mb-3"><b style="color: var(--primary-color);"><i class="fa fa-info-circle me-1"></i> Petunjuk Penggunaan:</b> Masukkan total harta peninggalan. Klik kotak pada diagram Faraidh untuk menentukan jumlah ahli waris yang hidup.</p>
                     <label class="form-label fw-bold">Total Harta Waris (Rp)</label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-white border-end-0">Rp. </span>
+                    <div class="input-group input-group-lg shadow-sm rounded">
+                        <span class="input-group-text border-end-0">Rp. </span>
                         <input type="text" class="form-control fw-bold border-start-0 ps-0" id="harta" inputmode="numeric" value="1.000.000.000">
                     </div>
-                    <p id="terbilang" class="py-2 text-success fw-bold fst-italic">Satu Miliar Rupiah</p>
+                    <p id="terbilang" class="pt-3 mb-0 text-success-custom fw-bold fst-italic"><i class="fa fa-check-circle me-1"></i> Satu Miliar Rupiah</p>
                 </div>
             </div>
 
             <div class="row mb-5">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 fw-bold"><i class="fa fa-sitemap text-primary"></i> Skema Ahli Waris</h5>
-                            <button class="btn btn-outline-secondary btn-sm" id="perbesar">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center p-3">
+                            <h5 class="mb-0 fw-bold"><i class="fa fa-sitemap" style="color: var(--secondary-color);"></i> Skema Ahli Waris</h5>
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm" id="perbesar">
                                 <i class="fa fa-search-plus"></i> <span id="txt_zoom">Zoom Out</span>
                             </button>
                         </div>
                         <div class="card-body p-0">
-                            <div class="svg-container bg-light" id="skema">
+                            <div class="svg-container" id="skema">
                                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1692px" height="1084px" viewBox="-0.5 -0.5 1692 1084" id="main_svg" style="transform: scale(0.6);">
                                     <g id="svg-target">
+                                        <!-- SVG Content remains exactly the same for logic processing -->
                                         <rect x="961" y="58.33" width="149.33" height="81.67" rx="12.25" ry="12.25" fill="#fbcc4f" id="_8_box"></rect>
                                         <text x="1035.17" y="104.67" fill="#0" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="14px">Ibunya Ayah</text>
                                         <rect x="982" y="35" width="107.33" height="35" rx="5.25" ry="5.25" fill="#000000"></rect>
@@ -383,27 +460,27 @@
                                         <text id="_14_jatah" x="1174" y="824" fill="#000" font-weight="bold" font-family="Helvetica" font-size="12px" text-anchor="end"></text>
                                         <text id="_14_mahjub" x="1100" y="784" fill="#d9534f" font-weight="bold" font-family="Helvetica" font-size="12px" text-anchor="middle" style="display:none;">Mahjub</text>
 
-                                        <path d="M 310 320 L 960 319.53" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 235 140 L 235 180 Q 235 190 234.89 200 L 234.66 220" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 160 319.17 L 84.66 319.9 Q 74.67 320 74.67 330 L 74.67 460" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 319.33 559.17 L 330 559.35 Q 340 559.53 340 560.18 L 340 560.84" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 490 560 L 520 560.58" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 590 520 L 590 430 Q 590 420 600 420 L 924.66 420 Q 934.66 420 934.66 430 L 934.66 460" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 760 460 L 760 390.05 L 760 320" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1104.67 460 L 1104.67 430 Q 1104.67 420 1114.67 420 L 1264.67 420 Q 1274.67 420 1274.67 430 L 1274.67 460" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1109.33 319.17 L 1190 319.02 Q 1200 319 1200 329 L 1200 420" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 480.01 700 L 480.01 680 Q 480.01 670 490.01 670 L 654.66 670 Q 664.66 670 664.66 680 L 664.66 700" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 584.66 940 L 584.66 920 Q 584.66 910 594.66 910 L 750 910 Q 760 910 760 920 L 760 940" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1034.67 220 L 1034.67 210 Q 1034.67 200 1044.67 200 L 1434.67 200 Q 1444.67 200 1444.67 210 L 1444.67 220" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 595 670 L 595 635.32 L 594.66 601.67" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 664 910 L 664 875.32 L 663.95 840" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 934.66 700 L 934.66 650.05 L 934.67 600" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1105 700 L 1105 650.05 L 1104.67 600" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1444.67 461.67 L 1444.67 411.11 L 1445 360" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1614.67 460 L 1614.67 410.05 L 1613.95 360" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1110.33 99.17 L 1201 99.53" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1349.33 99.17 L 1604.67 99.97 Q 1614.67 100 1614.67 110 L 1614.67 220" fill="none" stroke="#23445d" stroke-width="4"></path>
-                                        <path d="M 1160 200 L 1160 150.05 L 1160 100" fill="none" stroke="#23445d" stroke-width="4"></path>
+                                        <path d="M 310 320 L 960 319.53" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 235 140 L 235 180 Q 235 190 234.89 200 L 234.66 220" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 160 319.17 L 84.66 319.9 Q 74.67 320 74.67 330 L 74.67 460" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 319.33 559.17 L 330 559.35 Q 340 559.53 340 560.18 L 340 560.84" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 490 560 L 520 560.58" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 590 520 L 590 430 Q 590 420 600 420 L 924.66 420 Q 934.66 420 934.66 430 L 934.66 460" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 760 460 L 760 390.05 L 760 320" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1104.67 460 L 1104.67 430 Q 1104.67 420 1114.67 420 L 1264.67 420 Q 1274.67 420 1274.67 430 L 1274.67 460" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1109.33 319.17 L 1190 319.02 Q 1200 319 1200 329 L 1200 420" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 480.01 700 L 480.01 680 Q 480.01 670 490.01 670 L 654.66 670 Q 664.66 670 664.66 680 L 664.66 700" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 584.66 940 L 584.66 920 Q 584.66 910 594.66 910 L 750 910 Q 760 910 760 920 L 760 940" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1034.67 220 L 1034.67 210 Q 1034.67 200 1044.67 200 L 1434.67 200 Q 1444.67 200 1444.67 210 L 1444.67 220" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 595 670 L 595 635.32 L 594.66 601.67" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 664 910 L 664 875.32 L 663.95 840" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 934.66 700 L 934.66 650.05 L 934.67 600" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1105 700 L 1105 650.05 L 1104.67 600" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1444.67 461.67 L 1444.67 411.11 L 1445 360" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1614.67 460 L 1614.67 410.05 L 1613.95 360" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1110.33 99.17 L 1201 99.53" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1349.33 99.17 L 1604.67 99.97 Q 1614.67 100 1614.67 110 L 1614.67 220" fill="none" stroke="#0a3629" stroke-width="4"></path>
+                                        <path d="M 1160 200 L 1160 150.05 L 1160 100" fill="none" stroke="#0a3629" stroke-width="4"></path>
                                     </g>
                                 </svg>
                             </div>
@@ -412,28 +489,29 @@
                 </div>
             </div>
 
+            <!-- Table Section -->
             <div class="row">
                 <div class="col-12">
-                    <div class="table-responsive-sm legend">
-                        <table style="background: #E4ECFB;" class="table table-bordered table-hover mb-0" id="tbl-container">
-                            <thead class="table-primary">
+                    <div class="table-responsive-sm legend border border-light">
+                        <table class="table table-bordered table-hover mb-0" id="tbl-container">
+                            <thead class="table-custom text-center">
                                 <tr>
-                                    <th>Ahli Waris</th>
-                                    <th class="text-center">Bagian</th>
-                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-start">Ahli Waris</th>
+                                    <th>Bagian</th>
+                                    <th>Jumlah</th>
                                     <th class="text-end">Harta Total</th>
                                     <th class="text-end">Harta Per Orang</th>
                                 </tr>
                             </thead>
                             <tbody id="hasil">
-                                <tr><td colspan="5" class="text-center text-muted">Belum ada ahli waris yang dipilih</td></tr>
+                                <tr><td colspan="5" class="text-center text-muted py-4">Belum ada ahli waris yang dipilih</td></tr>
                             </tbody>
                         </table>
                     </div>
                     
-                    <span class="float shadow-lg d-flex flex-column align-items-center justify-content-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Lihat Hasil">
-                        <i class="fa fa-folder my-float mt-1"></i>
-                        <small style="font-size: 11px; font-weight:bold; margin-top:-5px">Hasil</small>
+                    <span class="float shadow d-flex flex-column align-items-center justify-content-center" data-bs-toggle="tooltip" data-bs-placement="top" title="Lihat Hasil">
+                        <i class="fa fa-folder-open my-float mt-1"></i>
+                        <small style="font-size: 11px; font-weight:600; margin-top:-5px">Hasil</small>
                     </span>
                 </div>
             </div>
@@ -480,7 +558,7 @@
             $('#harta').on('keyup', function() {
                 this.value = formatRupiah(this.value);
                 let num = this.value.replace(/\./g, '');
-                $('#terbilang').text(num ? terbilang(num) + ' Rupiah' : '');
+                $('#terbilang').html(num ? '<i class="fa fa-check-circle me-1"></i> ' + terbilang(num) + ' Rupiah' : '');
                 Engine.run();
             });
 
@@ -515,7 +593,8 @@
                 if (currentId) {
                     state[currentId] = val;
                     $('#_' + currentId + '_orang').text(val);
-                    $('#_' + currentId + '_box').attr('stroke', val > 0 ? '#ff0000' : 'none').attr('stroke-width', val > 0 ? '4' : '0');
+                    // Changed stroke highlight to the new Gold color instead of red
+                    $('#_' + currentId + '_box').attr('stroke', val > 0 ? '#c5a059' : 'none').attr('stroke-width', val > 0 ? '5' : '0');
                     Engine.run();
                 }
                 modal.hide();
@@ -556,7 +635,7 @@
 
                     let activeCount = Object.values(h).reduce((a,b)=>a+b, 0);
                     if(activeCount === 0) {
-                        $('#hasil').html('<tr><td colspan="5" class="text-center text-muted">Pilih minimal 1 ahli waris.</td></tr>');
+                        $('#hasil').html('<tr><td colspan="5" class="text-center text-muted py-4">Pilih minimal 1 ahli waris.</td></tr>');
                         return;
                     }
 
@@ -738,11 +817,11 @@
 
                                 tableHtml += `
                                     <tr>
-                                        <td>${HEIRS[i].name}</td>
-                                        <td class="text-center">${labelText} &rarr; ${siham[i]}/${kpk}</td>
+                                        <td class="fw-bold">${HEIRS[i].name}</td>
+                                        <td class="text-center">${labelText} &rarr; <strong>${siham[i]}/${kpk}</strong></td>
                                         <td class="text-center">${h[i]}</td>
                                         <td class="text-end fw-bold">Rp ${formatRupiah(jatahGrup.toFixed(0))}</td>
-                                        <td class="text-end text-success fw-bold">Rp ${formatRupiah(jatahPerOrang.toFixed(0))}</td>
+                                        <td class="text-end text-success-custom fw-bold">Rp ${formatRupiah(jatahPerOrang.toFixed(0))}</td>
                                     </tr>
                                 `;
 
@@ -753,7 +832,7 @@
                         }
                     }
 
-                    if(!anyResult) tableHtml = '<tr><td colspan="5" class="text-center text-muted">Harta tidak dapat dibagikan (semua Mahjub / tidak valid).</td></tr>';
+                    if(!anyResult) tableHtml = '<tr><td colspan="5" class="text-center text-muted py-4">Harta tidak dapat dibagikan (semua Mahjub / tidak valid).</td></tr>';
                     $('#hasil').html(tableHtml);
                 }
             };
@@ -761,4 +840,3 @@
     </script>
 </body>
 </html>
-
