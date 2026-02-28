@@ -91,6 +91,8 @@
         }
         .table { margin-bottom: 0; background-color: #ffffff; }
         .table-warning { background-color: #fff9e6 !important; }
+        .table-success-custom { background-color: #e6f4ea !important; }
+        .table-danger-custom { background-color: #fce8e6 !important; }
         
         /* Cards & Modals */
         .card { border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
@@ -729,15 +731,7 @@
                         const priority = [
                             [1,2], [19,20], [5], [7], [9,10], [11,12], [13], [14], [15], [16], [17], [18]
                         ];
-                        let found = false;
-                        for(let group of priority) {
-                            let inGroup = group.some(id => asobah[id] !== undefined);
-                            if(inGroup && !found) found = true; // Keep this group
-                            else if (found) group.forEach(id => { delete asobah[id]; }); // Delete lower tiers
-                        }
-                    }
-
-                    // 4. MATH (KPK, Siham, Aul)
+                    // 4. MATH (KPK, Siham, Aul, Rad)
                     let denominators = Object.values(furudh).map(f => f.den);
                     let kpk = denominators.length > 0 ? Math.max(1, lcm(denominators)) : 1;
                     
@@ -751,14 +745,23 @@
                     }
 
                     let sisa = kpk - sihamSum;
+                    let isAul = false;
+                    let isRad = false;
+                    let originalKpk = kpk;
+                    let originalSihamSum = sihamSum;
 
                     // AUL Condition (Shares exceed base)
                     if (sihamSum > kpk) {
+                        isAul = true;
                         kpk = sihamSum; // Increase base
                         sisa = 0; // No asobah left
                     } 
-                    // NO RAD CONDITION: We removed the automatic Rad logic here.
-                    // If sihamSum < kpk and there is no Asabah, the sisa stays intact for Baitul Mal.
+                    // RAD Condition (Shares fall short, no residuary heir)
+                    else if (sihamSum < kpk && Object.keys(asobah).length === 0) {
+                        isRad = true;
+                        kpk = sihamSum; // Decrease base to match sum of shares
+                        sisa = 0;
+                    }
 
                     // 5. TASHIH (Distribute Asobah & Fix Base for integer division)
                     let asobahPoints = 0;
@@ -789,19 +792,12 @@
                         if (furudh[id].num) furudh[id].label += " + Asabah";
                     }
 
-                    // Baitul Mal Setup
-                    let baitulMalSiham = 0;
-                    if (sisa > 0 && asobahPoints === 0) {
-                        baitulMalSiham = sisa;
-                    }
-
                     // Fix individual count fraction (Tashih for Furudh groups)
                     for(let id in siham) {
                         if(siham[id] % h[id] !== 0) {
                             let t = h[id];
                             kpk *= t;
                             sisa *= t;
-                            baitulMalSiham *= t; // Make sure Baitul Mal fraction scales up too
                             for(let k in siham) siham[k] *= t;
                         }
                     }
@@ -821,10 +817,14 @@
                                 let jatahPerOrang = jatahGrup / h[i];
                                 let labelText = furudh[i].label;
 
+                                let statusBadge = '';
+                                if (isRad && !asobah[i]) statusBadge = ' <span class="badge bg-success" style="font-size:0.7em">Rad</span>';
+                                if (isAul) statusBadge = ' <span class="badge bg-danger" style="font-size:0.7em">Aul</span>';
+
                                 tableHtml += `
                                     <tr>
                                         <td class="fw-bold">${HEIRS[i].name}</td>
-                                        <td class="text-center">${labelText} &rarr; <strong>${siham[i]}/${kpk}</strong></td>
+                                        <td class="text-center">${labelText}${statusBadge} &rarr; <strong>${siham[i]}/${kpk}</strong></td>
                                         <td class="text-center">${h[i]}</td>
                                         <td class="text-end fw-bold">Rp ${formatRupiah(jatahGrup.toFixed(0))}</td>
                                         <td class="text-end text-success-custom fw-bold">Rp ${formatRupiah(jatahPerOrang.toFixed(0))}</td>
@@ -838,19 +838,21 @@
                         }
                     }
 
-                    // Display Baitul Mal if there's an active remainder
-                    if (baitulMalSiham > 0) {
-                        anyResult = true;
-                        let fraction = baitulMalSiham / kpk;
-                        let jatahBaitulMal = totalHarta * fraction;
-
+                    // Explanatory detail row for Rad or Aul
+                    if (isRad) {
                         tableHtml += `
-                            <tr class="table-warning">
-                                <td class="fw-bold"><i class="fa fa-university me-1 text-muted"></i> Baitul Mal (Sisa Harta)</td>
-                                <td class="text-center">Sisa &rarr; <strong>${baitulMalSiham}/${kpk}</strong></td>
-                                <td class="text-center">-</td>
-                                <td class="text-end fw-bold text-muted">Rp ${formatRupiah(jatahBaitulMal.toFixed(0))}</td>
-                                <td class="text-end fw-bold text-muted">Rp ${formatRupiah(jatahBaitulMal.toFixed(0))}</td>
+                            <tr class="table-success-custom">
+                                <td colspan="5" class="text-center text-success-custom">
+                                    <small><i class="fa fa-info-circle me-1"></i> <b>Penjelasan Rad:</b> Karena tidak ada ahli waris Asabah (Penerima Sisa), dan total pembilang (${originalSihamSum}) lebih kecil dari Asal Masalah (${originalKpk}), maka Asal Masalah <b>diturunkan</b> menjadi ${originalSihamSum}. Hal ini membuat porsi rasio ahli waris yang berhak menjadi lebih besar secara proporsional agar harta terbagi 100%.</small>
+                                </td>
+                            </tr>
+                        `;
+                    } else if (isAul) {
+                        tableHtml += `
+                            <tr class="table-danger-custom">
+                                <td colspan="5" class="text-center text-danger">
+                                    <small><i class="fa fa-info-circle me-1"></i> <b>Penjelasan Aul:</b> Total pembilang (${originalSihamSum}) melebihi Asal Masalah (${originalKpk}). Maka Asal Masalah <b>dinaikkan</b> menjadi ${originalSihamSum} agar harta mencukupi dan terbagi rata secara proporsional (mengalami pengurangan porsi).</small>
+                                </td>
                             </tr>
                         `;
                     }
