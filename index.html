@@ -57,9 +57,17 @@
             box-shadow: 0 0 0 0.25rem rgba(15, 76, 58, 0.25);
         }
 
-        /* SVG Interaction */
-        rect { cursor: pointer; transition: all 0.2s ease-in-out; }
-        rect:hover { filter: brightness(1.15) drop-shadow(0px 0px 5px rgba(0,0,0,0.3)); }
+        /* SVG Interaction - Fixed Pointer Events */
+        #main_svg * { pointer-events: none; }
+        #main_svg rect[id$="_box"] { 
+            pointer-events: all; 
+            cursor: pointer; 
+            transition: all 0.2s ease-in-out; 
+        }
+        #main_svg rect[id$="_box"]:hover { 
+            filter: brightness(1.15) drop-shadow(0px 0px 5px rgba(0,0,0,0.3)); 
+        }
+        
         .svg-container { overflow-x: auto; overflow-y: hidden; width: 100%; cursor: grab; background-color: #fdfdfd; border-radius: 0 0 12px 12px;}
         .svg-container:active { cursor: grabbing; }
         svg { max-width: none; transition: transform 0.3s ease; transform-origin: top left;}
@@ -406,7 +414,7 @@
                                         <text x="1444.17" y="566.34" fill="#0" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="14px">Sepupu Laki</text>
                                         <rect x="1391" y="496.67" width="107.33" height="35" rx="5.25" ry="5.25" fill="#000000"></rect>
                                         <text x="1444.16" y="519.67" fill="#FFFFFF" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="14px">ابن عم شقيق</text>
-                                        <ellipse cx="1444.67" cy="479.17" rx="17.5" ry="17.5" fill="#000000"></ellipse>
+                                        <ellipse cx="1444.67" cy="477.5" rx="17.5" ry="17.5" fill="#000000"></ellipse>
                                         <text x="1445" y="484" fill="#FFFFFF" font-family="Helvetica" font-size="14px" text-anchor="middle">17</text>
                                         <rect x="1380" y="578.67" width="20" height="20" rx="3" ry="3" fill="#FFFFFF" stroke="#000"></rect>
                                         <text id="_17_orang" x="1390" y="593" fill="#000" font-family="Helvetica" font-size="13px" font-weight="bold" text-anchor="middle">0</text>
@@ -553,8 +561,8 @@
 
         function lcm(arr) {
             const gcd = (a, b) => a ? gcd(b % a, a) : b;
-            const lcm = (a, b) => a * b / gcd(a, b);
-            return arr.reduce(lcm, 1);
+            const innerLcm = (a, b) => a * b / gcd(a, b);
+            return arr.reduce(innerLcm, 1);
         }
 
         $(document).ready(function() {
@@ -731,6 +739,14 @@
                         const priority = [
                             [1,2], [19,20], [5], [7], [9,10], [11,12], [13], [14], [15], [16], [17], [18]
                         ];
+                        let found = false;
+                        for(let group of priority) {
+                            let inGroup = group.some(id => asobah[id] !== undefined);
+                            if(inGroup && !found) found = true; // Keep this group
+                            else if (found) group.forEach(id => { delete asobah[id]; }); // Delete lower tiers
+                        }
+                    }
+
                     // 4. MATH (KPK, Siham, Aul, Rad)
                     let denominators = Object.values(furudh).map(f => f.den);
                     let kpk = denominators.length > 0 ? Math.max(1, lcm(denominators)) : 1;
