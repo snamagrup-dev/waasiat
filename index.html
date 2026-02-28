@@ -90,6 +90,7 @@
             border-bottom: none;
         }
         .table { margin-bottom: 0; background-color: #ffffff; }
+        .table-warning { background-color: #fff9e6 !important; }
         
         /* Cards & Modals */
         .card { border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
@@ -276,7 +277,7 @@
                                         <text x="414.16" y="566.34" fill="#0" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="14px">Suami</text>
                                         <rect x="361" y="496.67" width="107.33" height="35" rx="5.25" ry="5.25" fill="#000000"></rect>
                                         <text x="414.16" y="519.67" fill="#FFFFFF" font-family="Helvetica" font-weight="bold" text-anchor="middle" font-size="14px">زوج</text>
-                                        <ellipse cx="414.66" cy="479.17" rx="17.5" ry="17.5" fill="#000000"></ellipse>
+                                        <ellipse cx="414.66" cy="477.5" rx="17.5" ry="17.5" fill="#000000"></ellipse>
                                         <text x="415" y="484" fill="#FFFFFF" font-family="Helvetica" font-size="14px" text-anchor="middle">4</text>
                                         <rect x="350" y="578.67" width="20" height="20" rx="3" ry="3" fill="#FFFFFF" stroke="#000"></rect>
                                         <text id="_4_orang" x="360" y="593" fill="#000" font-family="Helvetica" font-size="13px" font-weight="bold" text-anchor="middle">0</text>
@@ -751,16 +752,13 @@
 
                     let sisa = kpk - sihamSum;
 
-                    // AUL Condition
+                    // AUL Condition (Shares exceed base)
                     if (sihamSum > kpk) {
                         kpk = sihamSum; // Increase base
                         sisa = 0; // No asobah left
                     } 
-                    // RAD Condition (Simplified Rad to all proportionally)
-                    else if (sihamSum < kpk && Object.keys(asobah).length === 0) {
-                        kpk = sihamSum; // Reduce base (Proportional Rad)
-                        sisa = 0;
-                    }
+                    // NO RAD CONDITION: We removed the automatic Rad logic here.
+                    // If sihamSum < kpk and there is no Asabah, the sisa stays intact for Baitul Mal.
 
                     // 5. TASHIH (Distribute Asobah & Fix Base for integer division)
                     let asobahPoints = 0;
@@ -791,11 +789,19 @@
                         if (furudh[id].num) furudh[id].label += " + Asabah";
                     }
 
+                    // Baitul Mal Setup
+                    let baitulMalSiham = 0;
+                    if (sisa > 0 && asobahPoints === 0) {
+                        baitulMalSiham = sisa;
+                    }
+
                     // Fix individual count fraction (Tashih for Furudh groups)
                     for(let id in siham) {
                         if(siham[id] % h[id] !== 0) {
                             let t = h[id];
                             kpk *= t;
+                            sisa *= t;
+                            baitulMalSiham *= t; // Make sure Baitul Mal fraction scales up too
                             for(let k in siham) siham[k] *= t;
                         }
                     }
@@ -832,6 +838,23 @@
                         }
                     }
 
+                    // Display Baitul Mal if there's an active remainder
+                    if (baitulMalSiham > 0) {
+                        anyResult = true;
+                        let fraction = baitulMalSiham / kpk;
+                        let jatahBaitulMal = totalHarta * fraction;
+
+                        tableHtml += `
+                            <tr class="table-warning">
+                                <td class="fw-bold"><i class="fa fa-university me-1 text-muted"></i> Baitul Mal (Sisa Harta)</td>
+                                <td class="text-center">Sisa &rarr; <strong>${baitulMalSiham}/${kpk}</strong></td>
+                                <td class="text-center">-</td>
+                                <td class="text-end fw-bold text-muted">Rp ${formatRupiah(jatahBaitulMal.toFixed(0))}</td>
+                                <td class="text-end fw-bold text-muted">Rp ${formatRupiah(jatahBaitulMal.toFixed(0))}</td>
+                            </tr>
+                        `;
+                    }
+
                     if(!anyResult) tableHtml = '<tr><td colspan="5" class="text-center text-muted py-4">Harta tidak dapat dibagikan (semua Mahjub / tidak valid).</td></tr>';
                     $('#hasil').html(tableHtml);
                 }
@@ -840,4 +863,3 @@
     </script>
 </body>
 </html>
-
